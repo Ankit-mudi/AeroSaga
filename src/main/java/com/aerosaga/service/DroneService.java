@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.aerosaga.entity.Drone;
 import com.aerosaga.repository.DroneRepository;
+import com.aerosaga.exception.ResourceNotFoundException;
 
 @Service
 public class DroneService {
@@ -23,11 +24,25 @@ public class DroneService {
 
     public Drone getDroneById(Long id) {
         return droneRepository.findById(id)
-                .orElse(null);
+                .orElseThrow(() ->
+                    new ResourceNotFoundException(
+                        "Drone not found with id: " + id
+                    )
+                );
     }
 
     public Drone createDrone(Drone drone) {
         drone.setId(null);
         return droneRepository.save(drone);
+    }
+    
+    public Drone updateDrone(Long id, Drone updatedDrone) {
+        Drone existingDrone = getDroneById(id);
+
+        existingDrone.setName(updatedDrone.getName());
+        existingDrone.setModel(updatedDrone.getModel());
+        existingDrone.setStatus(updatedDrone.getStatus());
+
+        return droneRepository.save(existingDrone);
     }
 }

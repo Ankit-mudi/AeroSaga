@@ -3,6 +3,7 @@ package com.aerosaga.controller;
 
 import java.util.List;
 
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import com.aerosaga.service.DroneService;
 
 import jakarta.validation.Valid;
 
+import org.springframework.web.bind.annotation.PutMapping;
 @RestController
 @RequestMapping("/api/drones")
 public class DroneController {
@@ -41,5 +43,12 @@ public class DroneController {
     @ResponseStatus(HttpStatus.CREATED)
     public Drone createDrone(@Valid @RequestBody Drone drone) {
         return droneService.createDrone(drone);
+    }
+    
+    @PutMapping("/{id}")
+    public Drone updateDrone(
+            @PathVariable Long id,
+            @Valid @RequestBody Drone drone) {
+        return droneService.updateDrone(id, drone);
     }
 }

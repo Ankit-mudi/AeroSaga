@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
@@ -21,6 +23,10 @@ public class Mission {
     private String destination;
 
     private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "drone_id")
+    private Drone drone;
 
     public Mission() {
     }
@@ -55,5 +61,13 @@ public class Mission {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Drone getDrone() {
+        return drone;
+    }
+
+    public void setDrone(Drone drone) {
+        this.drone = drone;
     }
 }
