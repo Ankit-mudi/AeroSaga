@@ -1,198 +1,115 @@
-# AeroSaga — Autonomous Drone Mission Control
+# Arrow Saga — Drone Fleet Simulation
 
-AeroSaga is a Spring Boot-based backend project for managing drones and their missions. It provides REST APIs to register drones, create and manage missions, track mission statuses, and validate requests using PostgreSQL as the database.
+Arrow Saga is a drone fleet simulation project focused on visualizing drone positions, movement, and telemetry through a web-based dashboard.
 
-## Project Status
+## Tech Stack
 
-**Current Phase: Week 1 — Backend Foundation and REST API Development**
+- React
+- Vite
+- CesiumJS — 3D globe and geospatial visualization
+- Deck.gl — geospatial data visualization layers
+- Lucide React — interface icons
 
-The initial backend APIs, database integration, request validation, and exception handling have been implemented.
+## Prerequisites
 
-## Technologies Used
+- Node.js and npm
+- Git
 
-- **Language:** Java
-- **Framework:** Spring Boot
-- **Backend:** Spring Web, Spring Data JPA
-- **Database:** PostgreSQL
-- **Validation:** Jakarta Bean Validation
-- **Build Tool:** Maven
-- **API Testing:** Postman
-- **Testing:** JUnit 5, Spring Boot Test
-- **Version Control:** Git and GitHub
-
-## Features Implemented
-
-### 1. Drone Management
-- Create a new drone.
-- Retrieve all drones.
-- Retrieve a drone by ID.
-- Update drone details.
-- Validate required drone fields.
-- Track drone availability and status.
-
-### 2. Mission Management
-- Create a mission and associate it with a drone.
-- Retrieve all missions.
-- Retrieve a mission by ID.
-- Filter missions by status.
-- Update mission details.
-- Delete a mission.
-- Verify that the selected drone exists and is available before creating a mission.
-
-### 3. Validation and Exception Handling
-- Validate required fields using `@NotBlank`.
-- Validate mission request fields, including drone ID.
-- Return `400 Bad Request` for validation errors.
-- Return `404 Not Found` when a requested drone or mission does not exist.
-- Return `409 Conflict` when a drone is unavailable for a new mission.
-- Handle API errors through a centralized `@RestControllerAdvice` class.
-
-### 4. Database Integration
-- Connected Spring Boot to PostgreSQL.
-- Used Spring Data JPA repositories for database operations.
-- Created entity relationships between drones and missions.
-
-## API Endpoints
-
-Base URL: `http://localhost:8080`
-
-### Drone APIs
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/drones` | Create a drone |
-| GET | `/api/drones` | Retrieve all drones |
-| GET | `/api/drones/{id}` | Retrieve a drone by ID |
-| PUT | `/api/drones/{id}` | Update a drone |
-
-### Mission APIs
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/missions` | Create a mission |
-| GET | `/api/missions` | Retrieve all missions |
-| GET | `/api/missions/{id}` | Retrieve a mission by ID |
-| GET | `/api/missions?status=PENDING` | Filter missions by status |
-| PUT | `/api/missions/{id}` | Update a mission |
-| DELETE | `/api/missions/{id}` | Delete a mission |
-
-## Sample API Requests
-
-### Create a Drone
-
-`POST /api/drones`
-
-```json
-{
-  "name": "Drone Alpha",
-  "model": "Aero-X1",
-  "status": "AVAILABLE"
-}
-```
-
-### Create a Mission
-
-`POST /api/missions`
-
-```json
-{
-  "droneId": 1,
-  "missionName": "Solar Panel Inspection",
-  "destination": "Rooftop-A"
-}
-```
-
-New missions are initially assigned the `PENDING` status. A drone must exist and have `AVAILABLE` status before it can be assigned a new mission.
-
-## Mission Status Flow
-
-The intended mission lifecycle is:
-
-`PENDING → IN_PROGRESS → COMPLETED`
-
-A mission may also transition to `FAILED` when a failure occurs. Automated workflow-driven transitions are planned for a later phase.
-
-## Project Structure
-
-```text
-src/
-├── main/
-│   ├── java/com/aerosaga/
-│   │   ├── controller/
-│   │   ├── dto/
-│   │   ├── entity/
-│   │   ├── exception/
-│   │   ├── repository/
-│   │   ├── service/
-│   │   └── AerosagaBackendApplication.java
-│   └── resources/
-│       └── application.properties
-└── test/
-    └── java/com/aerosaga/
-        └── AerosagaBackendApplicationTests.java
-```
-
-## Setup and Run
-
-### Prerequisites
-- Java JDK
-- PostgreSQL
-- Maven, or the included Maven Wrapper
+## Getting Started
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Ankit-mudi/AeroSaga.git
+git clone --branch integerate https://github.com/lokeshsenthilkumarl2008-cmyk/AeroSaga.git
 cd AeroSaga
 ```
 
-Switch to the development branch:
+### 2. Install dependencies
 
 ```bash
-git switch ankit-mudi
+npm install
 ```
 
-### 2. Configure PostgreSQL
+### 3. Start the development server
 
-Create a PostgreSQL database named `aerosaga_db`.
+```bash
+npm run dev
+```
 
-Configure the database URL, username, and password in `src/main/resources/application.properties`. Use your own local database credentials and avoid committing passwords or other secrets.
+Open the local URL printed in your terminal.
 
-### 3. Run the application
+### 4. Build for production
 
-On Windows:
+```bash
+npm run build
+```
 
-```cmd
+### 5. Run lint checks
+
+```bash
+npm run lint
+```
+
+## Project Structure
+
+- `src/` — React application source code
+- `public/` — Static assets
+- `index.html` — Vite application entry point
+- `vite.config.js` — Vite configuration
+- `package.json` — Dependencies and npm scripts
+
+## Development Notes
+
+- Do not commit `node_modules/`, build output, or environment secrets.
+- Keep simulation data and telemetry clearly separated from future live-drone integrations.
+- Coordinate changes to shared files with the team to reduce merge conflicts.
+
+## Backend
+
+The Spring Boot API runs on port `8080` and uses PostgreSQL. Create the `aerosaga_db` database, then provide database credentials through `DB_USERNAME` and `DB_PASSWORD`. `DATABASE_URL` can override the default JDBC URL. The password must be set: PostgreSQL SCRAM authentication fails when `DB_PASSWORD` is empty.
+
+From the repository root, run the API with:
+
+```bash
+./mvnw spring-boot:run
+```
+
+On Windows, use `mvnw.cmd spring-boot:run`.
+
+In PowerShell, set the credentials in the same terminal before starting the API:
+
+```powershell
+$env:DB_USERNAME = "postgres"
+$env:DB_PASSWORD = "<your PostgreSQL password>"
 mvnw.cmd spring-boot:run
 ```
 
-Alternatively, if Maven is installed:
+The dashboard reads drone, mission, telemetry, and workflow-signal records from the backend. It can register drones, create and start missions, and show persisted workflow progress. By default, Temporal runs in a local in-memory development environment; its execution history is not durable across backend restarts. For durable workflows, run a Temporal server and set `SPRING_PROFILES_ACTIVE=external-temporal` and `TEMPORAL_TARGET=localhost:7233`. Map positions, speed, and heading use simulated values until a telemetry producer posts real readings.
 
-```bash
-mvn spring-boot:run
-```
+Telemetry producers can submit readings with `POST /api/telemetry/drone/{droneId}` using `batteryLevel`, `latitude`, `longitude`, and `altitude`. Mission workflows are started with `POST /api/missions/{id}/execute`; workflow activity records are available from `/api/workflow-signals`.
 
-The application runs on port `8080` by default.
+## Project Status
 
-## Testing
+The integration branch combines the dashboard, Temporal workflow, telemetry, workflow-signal, and PostgreSQL drone and mission APIs. Map positions use stored telemetry when available and simulation placeholders otherwise.
 
-The following checks have been performed during Week 1 development:
 
-- Tested drone and mission API operations using Postman.
-- Verified request validation and error responses.
-- Tested unavailable-drone conflict handling.
-- Ran the Spring Boot context-load test.
-- Built the project successfully using Maven.
 
-## Upcoming Work
 
-- Integrate Temporal workflows for mission execution.
-- Implement workflow activities and worker configuration.
-- Add retry policies, timeouts, and failure handling.
-- Add further automated tests and project documentation.
 
-## Repository
 
-GitHub: https://github.com/Ankit-mudi/AeroSaga
+# React + Vite
 
-Development branch: `ankit-mudi`
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the Oxlint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.

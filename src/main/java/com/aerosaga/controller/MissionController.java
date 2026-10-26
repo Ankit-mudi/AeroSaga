@@ -1,5 +1,5 @@
 
-package com.aerosaga.controller;
+package com.AeroSaga.controller;
 
 import java.util.List;
 
@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
 
-import com.aerosaga.dto.MissionRequest;
-import com.aerosaga.entity.Mission;
-import com.aerosaga.service.MissionService;
+import com.AeroSaga.dto.MissionRequest;
+import com.AeroSaga.entity.Mission;
+import com.AeroSaga.service.MissionService;
 
 @RestController
 @RequestMapping("/api/missions")
@@ -39,6 +40,20 @@ public class MissionController {
     @GetMapping("/{id}")
     public Mission getMissionById(@PathVariable Long id) {
         return missionService.getMissionById(id);
+    }
+
+    @PostMapping("/{id}/execute")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Mission executeMission(@PathVariable Long id) {
+        try {
+            return missionService.executeMission(id);
+        } catch (io.temporal.client.WorkflowExecutionAlreadyStarted workflowAlreadyStarted) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "A workflow already exists for this mission",
+                    workflowAlreadyStarted
+            );
+        }
     }
 
     @PostMapping
