@@ -52,4 +52,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(error);
     }
+    
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleGeneralException(
+            Exception ex) {
+
+        Map<String, String> error = Map.of(
+                "error", "Internal Server Error",
+                "message", "Something went wrong"
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(error);
+    }
 }
